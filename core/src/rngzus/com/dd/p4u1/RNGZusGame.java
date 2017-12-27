@@ -12,12 +12,11 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 
 import rngzus.com.dd.p4u1.utils.PaulGraphics;
 
-public class RNGZusGame extends ApplicationAdapter implements GestureDetector.GestureListener {
+public class RNGZusGame extends ApplicationAdapter{
 	public static final int D20 = 20;
 	public static final int COIN = 2;
 	public static final int D4 = 4;
@@ -27,7 +26,6 @@ public class RNGZusGame extends ApplicationAdapter implements GestureDetector.Ge
 	public static final int D12 = 12;
 	int[] types = {COIN, D4, D6, D8, D10, D12, D20};
 	String[] typeNames = {"Coin", "d4", "d6", "d8", "d10", "d12", "d20"};
-
 	SpriteBatch batch;
 	Texture img;
 	OrthographicCamera camera;
@@ -47,7 +45,11 @@ public class RNGZusGame extends ApplicationAdapter implements GestureDetector.Ge
 	BitmapFont morgan;
 	boolean hasRandom = false;
 	String randomString = "";
-
+	float animationLength = 200;
+	float stepRate = 2f;
+	float animationTimer = 0;
+	boolean animating = false;
+	float alpha;
 	boolean showTute = false;
 	Preferences prefs;
 
@@ -70,9 +72,6 @@ public class RNGZusGame extends ApplicationAdapter implements GestureDetector.Ge
 		burst = new Sprite(burstTexture);
 		burst.setSize(PaulGraphics.width, PaulGraphics.width);
 		burst.setY((PaulGraphics.height / 2) - (PaulGraphics.width / 2));
-		//burst.setY(PaulGraphics.height / 2);
-		//burst.setCenterX(PaulGraphics.width / 2);
-		//burst.setOrigin(PaulGraphics.width / 2,PaulGraphics.height / 2);
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, PaulGraphics.width, PaulGraphics.height);
 		shapes = new ShapeRenderer();
@@ -81,9 +80,8 @@ public class RNGZusGame extends ApplicationAdapter implements GestureDetector.Ge
 				false);
 		prefs = Gdx.app.getPreferences("rngzus-settings");
 		showTute = prefs.getBoolean("show-tute", true);
+		typeIndex = prefs.getInteger("type", 6);
 	}
-
-
 
 	public String getRandomString(int type) {
 		int dice = 0;
@@ -118,21 +116,13 @@ public class RNGZusGame extends ApplicationAdapter implements GestureDetector.Ge
 		return ((int)(Math.random() * dice) + 1) + "";
 	}
 
-	public String getRandomString() {
-		return getRandomString(types[(int)(Math.random() * types.length)]);
-	}
-
-	float animationLength = 200;
-	float stepRate = 2f;
-	float animationTimer = 0;
-	boolean animating = false;
-float alpha;
 	public void resetAnimation(){
 		step = 0;
 		animationTimer = 1;
 		animating = true;
 		alpha = 1f;
 	}
+
 	@Override
 	public void render () {
 		if (Gdx.input.justTouched()) {
@@ -147,6 +137,8 @@ float alpha;
 					if (typeIndex >= types.length) {
 						typeIndex = 0;
 					}
+					prefs.putInteger("type", typeIndex);
+					prefs.flush();
 				} else {
 					hasRandom = true;
 					randomString = getRandomString(types[typeIndex]);
@@ -159,16 +151,6 @@ float alpha;
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.setProjectionMatrix(camera.combined);
 		shapes.setProjectionMatrix(camera.combined);
-
-
-
-        shapes.begin(ShapeRenderer.ShapeType.Line);
-
-        for (int x = 0; x < PaulGraphics.width; x += 100) {
-            shapes.setColor(Color.WHITE);
-            //shapes.line(((float)x) + step, 0, ((float)x) + step, PaulGraphics.height);
-        }
-        shapes.end();
         batch.begin();
         sprite.draw(batch);
         morgan.setColor(Color.BLACK);
@@ -181,12 +163,12 @@ float alpha;
 		if (hasRandom) {
 			batch.begin();
 			burst.draw(batch);
-			//burst.rotate(2);
 			burst.setAlpha(animationTimer / animationLength );
 			morgan.setColor(Color.BLACK);
 			morgan.draw(batch, randomString, (PaulGraphics.width / 2) - (randomString.length() * 40), (PaulGraphics.height / 2) + 40);
 			batch.end();
 		}
+
 		if (animating) {
 			step += stepRate;
 			alpha = 1 - (animationTimer * (1 / animationLength));
@@ -205,58 +187,9 @@ float alpha;
 		}
 	}
 
-
-	public void logic(){
-    }
 	@Override
 	public void dispose () {
 		batch.dispose();
 		img.dispose();
-	}
-
-	@Override
-	public boolean touchDown(float x, float y, int pointer, int button) {
-		return false;
-	}
-
-	@Override
-	public boolean tap(float x, float y, int count, int button) {
-
-		return false;
-	}
-
-	@Override
-	public boolean longPress(float x, float y) {
-		return false;
-	}
-
-	@Override
-	public boolean fling(float velocityX, float velocityY, int button) {
-		return false;
-	}
-
-	@Override
-	public boolean pan(float x, float y, float deltaX, float deltaY) {
-		return false;
-	}
-
-	@Override
-	public boolean panStop(float x, float y, int pointer, int button) {
-		return false;
-	}
-
-	@Override
-	public boolean zoom(float initialDistance, float distance) {
-		return false;
-	}
-
-	@Override
-	public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
-		return false;
-	}
-
-	@Override
-	public void pinchStop() {
-
 	}
 }
