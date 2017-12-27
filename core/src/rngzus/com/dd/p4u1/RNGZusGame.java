@@ -24,8 +24,32 @@ public class RNGZusGame extends ApplicationAdapter{
 	public static final int D8 = 8;
 	public static final int D10 = 10;
 	public static final int D12 = 12;
-	int[] types = {COIN, D4, D6, D8, D10, D12, D20};
-	String[] typeNames = {"Coin", "d4", "d6", "d8", "d10", "d12", "d20"};
+	public static final int EIGHTBALL = 3;
+	int[] types = {COIN, EIGHTBALL, D4, D6, D8, D10, D12, D20};
+	String[] typeNames = {"Coin", "8ball", "d4", "d6", "d8", "d10", "d12", "d20"};
+	String[] eightBall =
+			{
+					"It is certain",
+					"It is decidedly so",
+					"Without a doubt",
+					"Yes definitely",
+					"You may rely on it",
+					"As I see it, yes",
+					"Most likely",
+					"Outlook good",
+					"Yes",
+					"Signs point to yes",
+					"Reply hazy try again",
+					"Ask again later",
+					"Better not tell you now",
+					"Cannot predict now",
+					"Concentrate and ask again",
+					"Don't count on it",
+					"My reply is no",
+					"My sources say no",
+					"Outlook not so good",
+					"Very doubtful"
+			};
 	SpriteBatch batch;
 	Texture img;
 	OrthographicCamera camera;
@@ -43,6 +67,7 @@ public class RNGZusGame extends ApplicationAdapter{
 	Sound angels;
 	int typeIndex = 6;
 	BitmapFont morgan;
+	BitmapFont morganSmall;
 	boolean hasRandom = false;
 	String randomString = "";
 	float animationLength = 200;
@@ -78,9 +103,15 @@ public class RNGZusGame extends ApplicationAdapter{
 		sprite.setSize(PaulGraphics.width, PaulGraphics.height);
 		morgan =  new BitmapFont(Gdx.files.internal("morgan.fnt"),
 				false);
+		morganSmall =  new BitmapFont(Gdx.files.internal("morgan_small.fnt"),
+				false);
 		prefs = Gdx.app.getPreferences("rngzus-settings");
 		showTute = prefs.getBoolean("show-tute", true);
 		typeIndex = prefs.getInteger("type", 6);
+	}
+
+	public String getEightBall() {
+		return eightBall[((int)(Math.random() * 20))];
 	}
 
 	public String getRandomString(int type) {
@@ -92,6 +123,8 @@ public class RNGZusGame extends ApplicationAdapter{
 				} else {
 					return "Tails";
 				}
+			case EIGHTBALL:
+				return getEightBall();
 			case D4:
 				dice = D4;
 				break;
@@ -154,7 +187,7 @@ public class RNGZusGame extends ApplicationAdapter{
         batch.begin();
         sprite.draw(batch);
         morgan.setColor(Color.BLACK);
-        morgan.draw(batch, typeNames[typeIndex], (PaulGraphics.width / 2) - (40 * typeNames[typeIndex].length()), PaulGraphics.height -30);
+        morgan.draw(batch, typeNames[typeIndex], (PaulGraphics.width / 2) - (40 * typeNames[typeIndex].length()), PaulGraphics.height -20);
         if (showTute) {
 			tute.draw(batch);
 		}
@@ -165,7 +198,12 @@ public class RNGZusGame extends ApplicationAdapter{
 			burst.draw(batch);
 			burst.setAlpha(animationTimer / animationLength );
 			morgan.setColor(Color.BLACK);
-			morgan.draw(batch, randomString, (PaulGraphics.width / 2) - (randomString.length() * 40), (PaulGraphics.height / 2) + 40);
+			morganSmall.setColor(Color.BLACK);
+			if (typeNames[typeIndex].length() > 2) {
+				morganSmall.draw(batch, randomString, (PaulGraphics.width / 2) - (randomString.length() * 22), (PaulGraphics.height / 2) + 20);
+			} else {
+				morgan.draw(batch, randomString, (PaulGraphics.width / 2) - (randomString.length() * 40), (PaulGraphics.height / 2) + 40);
+			}
 			batch.end();
 		}
 
@@ -191,5 +229,21 @@ public class RNGZusGame extends ApplicationAdapter{
 	public void dispose () {
 		batch.dispose();
 		img.dispose();
+	}
+
+	public static void main(String[] args) {
+		System.out.println("wat");
+		int heads = 0;
+		int tails = 0;
+		for (int i = 0; i < 1000000; i++) {
+			if (i % 100 == 0) {
+				System.out.println(i + " heads: " + heads + "  tails: " + tails);
+			}
+			if ((Math.random() * 2) >= 1){
+				heads++;
+			} else {
+				tails++;
+			}
+		}
 	}
 }
