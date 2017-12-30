@@ -9,13 +9,15 @@ import com.badlogic.gdx.math.Vector2;
 
 public class PaulGraphics {
 
-    public static final float width = Gdx.graphics.getWidth();
-    public static final float height = Gdx.graphics.getHeight();
+    public static final float width = 1224;
+    public static final float height = 1824;
+    public static final float GAMEHEIGHT = Gdx.graphics.getHeight();
+    public static final float GAMEWIDTH = Gdx.graphics.getWidth();
 
     static public Vector2 pixelToCoord(Vector2 arg0) {
 
-        float x = (arg0.x * width) / width;
-        float y = ((height - arg0.y) * height) / height;
+        float x = (arg0.x * width) / GAMEWIDTH;
+        float y = ((GAMEHEIGHT - arg0.y) * height) / GAMEHEIGHT;
 
         return new Vector2(x, y);
     }

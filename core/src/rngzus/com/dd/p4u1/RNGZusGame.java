@@ -107,7 +107,7 @@ public class RNGZusGame extends ApplicationAdapter{
 				false);
 		prefs = Gdx.app.getPreferences("rngzus-settings");
 		showTute = prefs.getBoolean("show-tute", true);
-		typeIndex = prefs.getInteger("type", 6);
+		typeIndex = prefs.getInteger("type", 7);
 	}
 
 	public String getEightBall() {
@@ -199,7 +199,7 @@ public class RNGZusGame extends ApplicationAdapter{
 			burst.setAlpha(animationTimer / animationLength );
 			morgan.setColor(Color.BLACK);
 			morganSmall.setColor(Color.BLACK);
-			if (typeNames[typeIndex].length() > 2) {
+			if (randomString.length() > 2) {
 				morganSmall.draw(batch, randomString, (PaulGraphics.width / 2) - (randomString.length() * 22), (PaulGraphics.height / 2) + 20);
 			} else {
 				morgan.draw(batch, randomString, (PaulGraphics.width / 2) - (randomString.length() * 40), (PaulGraphics.height / 2) + 40);
